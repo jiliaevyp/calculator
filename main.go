@@ -1,18 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func main() {
-
-	var mass [20]int
+func testZifry() {
+	var mass [100]int
+	fmt.Println("Введите размер массива")
+	fmt.Scanf("%d\n",&num)
 	fmt.Println("")
 	fmt.Println("=================================================")
 	fmt.Println("Первый запуск сложнейшей программы на Go! ))))))))")
-	fmt.Println("==================================================")
+	fmt.Println("==================================================", "\n")
 	fmt.Println("")
 	fmt.Println("Ну теперь держись интернет!")
     summ := 0
-	for i := 1; i <= len(mass); i++ {
+	fmt.Println("kol=", num)
+	for i := 1; i <= num; i++ {
 		mass[i-1] = i
 		summ += mass[i-1]
 		fmt.Print(i,"  ", mass[i-1])
@@ -35,8 +39,78 @@ func main() {
 		case 10: fmt.Print(" десять", "\n")
 		}
 		fmt.Print("-------------------", "\n")
-		fmt.Print( mass)
+		//fmt.Print( mass)
 		fmt.Print("сумма = ", summ, "\n")
 	}
+
+}
+
+func callcul() {
+	var arg1, arg2, result int64
+	var mach string
+	const plus string = "+"
+	const minus string = "-"
+	const mult string = "*"
+	const div string = "/"
+	fmt.Println("Это калькулятор")
+	fmt.Print("-------------------", "\n")
+	arg1, arg2, mach = inparg()
+	switch mach {
+	case plus: result = arg1 + arg2
+	case minus: result = arg1 + arg2
+	case mult: result = arg1 + arg2
+	case div: result = arg1 + arg2
+	}
+	fmt.Print(arg1, " ", mach, " ", arg2, " = ", result,"\n")
+	fmt.Print("-------------------")
+}
+
+func inparg() (int64, int64, string) {
+	var arg1, arg2 int64
+	var oper_err, divzero_err int
+	var mach string
+	const div string = "/"
+	fmt.Println("Введите первое число")
+	fmt.Scanf("%d\n",&arg1)
+	fmt.Println("Введите второе число")
+	fmt.Scanf("%d\n",&arg2)
+	mach = machen()
+	if mach != "?" || mach == div && arg2 != 0 {
+		return arg1, arg2, mach
+	}
+
+	if mach == div && arg2 == 0 {
+		fmt.Print("Делить на ноль нельзя", "\n")
+		return arg1, arg2, mach
+		}
+		return arg1, arg2, mach
+	} else {
+		fmt.Print("Введите правильную операцию", "\n")
+		return 0, 0, "+"
+	}
+
+
+	//return()
+}
+func machen() (string) {
+	var mach string
+	const plus string = "+"
+	const minus string = "-"
+	const mult string = "*"
+	const div string = "/"
+	fmt.Println("Что с ними сделать?")
+	fmt.Println(plus, " сложить,", minus, " вычесть,", mult, " умножить,", div, " разделить")
+	fmt.Scanf("%s\n",&mach)
+	if mach == plus || mach == minus || mach == mult || mach == div {
+		return mach
+	} else {
+		return "?"
+	}
+}
+
+
+func main() {
+	//testZifry()
+	callcul()
 
 }
