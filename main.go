@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-var arg1, arg2, result int
+var arg1, arg2, result float64
 var mach string
 var errcalcul int // 0-ошибок нет, 1-ошибка в числе, 2-ошибка в операторе, 3-деление на ноль
 
@@ -19,7 +19,7 @@ const mult string = "*"
 const div string = "/"
 const opererr string = "?"
 
-func callcul() (int, int) {
+func callcul() (float64, int) {
 	var err int
 	const opererr string = "?"
 	arg1, err = inparg(1)
@@ -38,8 +38,8 @@ func callcul() (int, int) {
 	return result, err
 }
 
-func inparg(num int) (int, int) {
-	var res int
+func inparg(num int) (float64, int) {
+	var res float64
 	var intString string
 	var err int
 	err = 0
@@ -49,7 +49,7 @@ func inparg(num int) (int, int) {
 		fmt.Println("Введите второе число")
 	}
 	fmt.Scanf("%s\n", &intString)
-	res, errconv := strconv.Atoi(intString) // Десятичные значения
+	res, errconv := strconv.ParseFloat(intString, 64)
 	if errconv != nil {
 		err = errnumbe
 		res = 0
@@ -61,18 +61,36 @@ func inpmachen() (string, int) {
 	var err int
 	err = 1
 	for err > 0 {
-		fmt.Println("Выберите действие")
-		fmt.Println(plus, " сложить,", minus, " вычесть,", mult, " умножить,", div, " разделить")
-		fmt.Scanf("%s\n", &mach)
+		fmt.Println("-----------------------------")
+		fmt.Println("Выберите действие:")
+		fmt.Println(plus, " сложить")
+		fmt.Println(minus, " вычесть")
+		fmt.Println(mult, " умножить")
+		fmt.Println(div, " разделить")
+		fmt.Println("-----------------------------")
+		fmt.Scanf("%s/n", &mach)
 		if len(mach) == 1 && (mach == plus || mach == minus || mach == mult || mach == div) {
 			err = 0
+			switch mach {
+			case plus:
+				fmt.Println(" сложить")
+			case minus:
+				fmt.Println(" вычесть")
+			case mult:
+				fmt.Println(" умножить")
+			case div:
+				fmt.Println(" разделить")
+			}
+		} else {
+			fmt.Println("*** Введите правильный символ!!! ***")
 		}
 	}
+	fmt.Println("-----------------------------")
 	return mach, err
 }
 
-func operation() (int, int) {
-	var res int
+func operation() (float64, int) {
+	var res float64
 	var err int
 	res = 0
 	err = 0
@@ -100,8 +118,14 @@ func printresult(err int) {
 	switch err {
 	case zeroerr:
 		{
+			fmt.Println("-----------------------------")
 			fmt.Print("Результат:", "\n")
-			fmt.Print(arg1, " ", mach, " ", arg2, " = ", result, "\n")
+			fmt.Printf("%.5f", arg1)
+			fmt.Print(" ", mach, " ")
+			fmt.Printf("%.5f", arg2)
+			fmt.Print(" = ")
+			fmt.Printf("%.5f", result)
+			fmt.Print("\n")
 		}
 	case errnumbe:
 		{
@@ -110,16 +134,17 @@ func printresult(err int) {
 		}
 	case erroper:
 		{
-			fmt.Println("\n", "*** К сожлению, вы ввели неверный символ ***")
+			fmt.Println("\n", "*** К сожалению, вы ввели неверный символ ***")
 			fmt.Println("*** Операция прекращена ***")
 		}
 	case errdivzero:
 		{
-			fmt.Println("\n", "*** Деление на ноль невозможно ***")
+			fmt.Println("-----------------------------")
+			fmt.Println("*** Деление на ноль невозможно ***")
 			fmt.Println("*** Операция прекращена ***")
 		}
 	}
-	fmt.Print("-------------------------------", "\n")
+	fmt.Println("-----------------------------", "\n\n")
 }
 
 func main() {
@@ -134,6 +159,8 @@ func main() {
 		fmt.Println("-----------------------------")
 		fmt.Println("|       Калькулятор          |")
 		fmt.Println("|  Считать, не пересчитать!  |")
+		fmt.Println("|                            |")
+		fmt.Println("|   (c) jiliaevyp@gmail.com  |")
 		fmt.Println("-----------------------------")
 		result, errcalcul = callcul()
 		printresult(errcalcul)
@@ -144,5 +171,5 @@ func main() {
 
 	}
 	fmt.Println("Рад был с Вами пработать!")
-	fmt.Println("Ждем Вас снова с нетерпением!", "\n\n")
+	fmt.Println("Обращайтесь в любое время без колебаний!", "\n\n")
 }
