@@ -2,103 +2,147 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 )
 
-func callcul() {
-	var arg1, arg2, result int64
-	var mach string
+var arg1, arg2, result int
+var mach string
+var errcalcul int // 0-ошибок нет, 1-ошибка в числе, 2-ошибка в операторе, 3-деление на ноль
+
+const zeroerr = 0
+const errnumbe = 1
+const erroper = 2
+const errdivzero = 3
+const plus string = "+"
+const minus string = "-"
+const mult string = "*"
+const div string = "/"
+const opererr string = "?"
+
+func callcul() (int, int) {
 	var err int
-	const plus string = "+"
-	const minus string = "-"
-	const mult string = "*"
-	const div string = "/"
-	fmt.Println("Это калькулятор")
-	fmt.Print("-------------------", "\n")
-	arg1, arg2, err = inparg()
+	const opererr string = "?"
+	arg1, err = inparg(1)
 	if err > 0 {
-		 fmt.Println("Числа не должны равняться нулю, операция прекращена")
-			fmt.Println("До новых встреч!","\n","Ждем с нетерпением!")
-			return
+		return 0, errnumbe
 	}
-	mach = inpmachen()
+	mach, err = inpmachen()
+	if err > 0 {
+		return 0, erroper
+	}
+	arg2, err = inparg(2)
+	if err > 0 {
+		return 0, errnumbe
+	}
+	result, err = operation()
+	return result, err
+}
+
+func inparg(num int) (int, int) {
+	var res int
+	var intString string
+	var err int
+	err = 0
+	if num == 1 {
+		fmt.Println("Введите первое число")
+	} else {
+		fmt.Println("Введите второе число")
+	}
+	fmt.Scanf("%s\n", &intString)
+	res, errconv := strconv.Atoi(intString) // Десятичные значения
+	if errconv != nil {
+		err = errnumbe
+		res = 0
+	}
+	return res, err
+}
+
+func inpmachen() (string, int) {
+	var err int
+	err = 1
+	for err > 0 {
+		fmt.Println("Выберите действие")
+		fmt.Println(plus, " сложить,", minus, " вычесть,", mult, " умножить,", div, " разделить")
+		fmt.Scanf("%s\n", &mach)
+		if len(mach) == 1 && (mach == plus || mach == minus || mach == mult || mach == div) {
+			err = 0
+		}
+	}
+	return mach, err
+}
+
+func operation() (int, int) {
+	var res int
+	var err int
+	res = 0
+	err = 0
 	switch mach {
-		case plus: result = arg1 + arg2
-		case minus: result = arg1 - arg2
-		case mult: result = arg1 * arg2
-		case div: {
+	case plus:
+		res = arg1 + arg2
+	case minus:
+		res = arg1 - arg2
+	case mult:
+		res = arg1 * arg2
+	case div:
+		{
 			if arg2 == 0 && mach == div {
-				fmt.Println("Деление на ноль невозможно")
-				return
+				err = errdivzero // деление невозможно
 			} else {
-				result = arg1 / arg2
+				res = arg1 / arg2 // деление возможно
 			}
 		}
-		default:
-			{ fmt.Println("Команда не распознана, операция прекращена")
-			  fmt.Println("До новых встреч!","\n","Ждем с нетерпением!")
-				return
-			}
 	}
-	fmt.Print(arg1, " ", mach, " ", arg2, " = ", result,"\n")
-	fmt.Print("-------------------","\n")
-	return
+	return res, err // выход
 }
 
-func inparg() (int64, int64, int) {
-	var arg1, arg2 int64
-	var i int
-	fmt.Println("Введите первое число")
-	for i:= 0; i<5; i++ {
-		fmt.Scanf("%d\n",&arg1)
-		if arg1 == 0 {
-			fmt.Println("Число не должно равно нулю")
-		} else {
-			break
-		}
-	}
-	if i == 5 {
-		return 0, 0, 1
-	}
-	fmt.Println(arg1)
-	fmt.Println("Введите второе число")
-	fmt.Scanf("%d\n",&arg2)
-	for i:= 0; i<5; i++ {
-		fmt.Scanf("%d\n",&arg1)
-		if arg1 == 0 {
-			fmt.Println("Число не должно равно нулю")
-		} else {
-			break
-		}
-	}
-	if i == 5 {
-		return 0, 0, 1
-	}
-	return arg1, arg2, 0
-}
+func printresult(err int) {
 
-func inpmachen() (string) {
-	var mach string
-	const plus string = "+"
-	const minus string = "-"
-	const mult string = "*"
-	const div string = "/"
-	fmt.Println("Что с ними сделать?")
-	fmt.Println(plus, " сложить,", minus, " вычесть,", mult, " умножить,", div, " разделить")
-	for i:= 0; i < 5; i++ {
-		fmt.Scanf("%s\n",&mach)
-		if mach == plus || mach == minus || mach == mult || mach == div {
-			return mach
-		} else {
-			fmt.Println("Команда не распознана, введите новую")
-			fmt.Println(plus, " сложить,", minus, " вычесть,", mult, " умножить,", div, " разделить")
+	switch err {
+	case zeroerr:
+		{
+			fmt.Print("Результат:", "\n")
+			fmt.Print(arg1, " ", mach, " ", arg2, " = ", result, "\n")
+		}
+	case errnumbe:
+		{
+			fmt.Println("\n", "*** К сожалению, вы ввели не число!!")
+			fmt.Println("*** Операция прекращена ***")
+		}
+	case erroper:
+		{
+			fmt.Println("\n", "*** К сожлению, вы ввели неверный символ ***")
+			fmt.Println("*** Операция прекращена ***")
+		}
+	case errdivzero:
+		{
+			fmt.Println("\n", "*** Деление на ноль невозможно ***")
+			fmt.Println("*** Операция прекращена ***")
 		}
 	}
-	fmt.Println("Попытки ввода команды исчерпаны", "\n")
-	return "?"
+	fmt.Print("-------------------------------", "\n")
 }
-
 
 func main() {
+	var komand string
+	arg1 = 0
+	arg2 = 0
+	result = 0
+	mach = "?"
+	errcalcul = 0
+	komand = "Y"
+	for komand == "Y" || komand == "y" || komand == "Н" || komand == "н" {
+		fmt.Println("-----------------------------")
+		fmt.Println("|       Калькулятор          |")
+		fmt.Println("|  Считать, не пересчитать!  |")
+		fmt.Println("-----------------------------")
+		result, errcalcul = callcul()
+		printresult(errcalcul)
+		fmt.Println("Продолжить? (Y)")
+		fmt.Println("Закончить? (Enter)")
+		komand = ""
+		fmt.Scanf("%s\n", &komand)
 
-	callcul()
+	}
+	fmt.Println("Рад был с Вами пработать!")
+	fmt.Println("Ждем Вас снова с нетерпением!", "\n\n")
 }
