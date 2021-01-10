@@ -17,11 +17,9 @@ const plus string = "+"
 const minus string = "-"
 const mult string = "*"
 const div string = "/"
-const opererr string = "?"
 
 func callcul() (float64, int) {
 	var err int
-	const opererr string = "?"
 	arg1, err = inparg(1)
 	if err > 0 {
 		return 0, errnumbe
@@ -48,7 +46,10 @@ func inparg(num int) (float64, int) {
 	} else {
 		fmt.Println("Введите второе число")
 	}
-	fmt.Scanf("%s\n", &intString)
+	fmt.Scanf(
+		"%s\n",
+		&intString,
+	)
 	res, errconv := strconv.ParseFloat(intString, 64)
 	if errconv != nil {
 		err = errnumbe
@@ -68,8 +69,11 @@ func inpmachen() (string, int) {
 		fmt.Println(mult, " умножить")
 		fmt.Println(div, " разделить")
 		fmt.Println("-----------------------------")
-		fmt.Scanf("%s/n", &mach)
-		if len(mach) == 1 && (mach == plus || mach == minus || mach == mult || mach == div) {
+		fmt.Scanf(
+			"%s/n",
+			&mach,
+		)
+		if mach == plus || mach == minus || mach == mult || mach == div {
 			err = 0
 			switch mach {
 			case plus:
@@ -144,7 +148,7 @@ func printresult(err int) {
 			fmt.Println("*** Операция прекращена ***")
 		}
 	}
-	fmt.Println("-----------------------------", "\n\n")
+	fmt.Print("-----------------------------", "\n", "\n")
 }
 
 func main() {
@@ -167,9 +171,12 @@ func main() {
 		fmt.Println("Продолжить? (Y)")
 		fmt.Println("Закончить? (Enter)")
 		komand = ""
-		fmt.Scanf("%s\n", &komand)
+		fmt.Scanf(
+			"%s\n",
+			&komand,
+		)
 
 	}
 	fmt.Println("Рад был с Вами пработать!")
-	fmt.Println("Обращайтесь в любое время без колебаний!", "\n\n")
+	fmt.Print("Обращайтесь в любое время без колебаний!", "\n", "\n")
 }
