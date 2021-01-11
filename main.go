@@ -1,46 +1,49 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
-var arg1, arg2, result float64
-var mach string
-var errcalcul int // 0-ошибок нет, 1-ошибка в числе, 2-ошибка в операторе, 3-деление на ноль
+var (
+	mach string
 
-const zeroerr = 0
-const errnumbe = 1
-const erroper = 2
-const errdivzero = 3
-const plus string = "+"
-const minus string = "-"
-const mult string = "*"
-const div string = "/"
+	ErrInvalidNumber   = errors.New("invalid number error")
+	ErrInvalidOperator = errors.New("invalid operator error")
+	ErrDivideZero      = errors.New("divide on zero error")
+)
 
-func callcul() (float64, int) {
-	var err int
-	arg1, err = inparg(1)
-	if err > 0 {
-		return 0, errnumbe
+const (
+	plus  string = "+"
+	minus string = "-"
+	mult  string = "*"
+	div   string = "/"
+)
+
+func callcul() (float64, float64, float64, error) {
+	var err error
+	arg1, err := inparg(1)
+	if err != nil {
+		return 0, 0, 0, err
 	}
-	mach, err = inpmachen()
-	if err > 0 {
-		return 0, erroper
+	mach = inpmachen()
+
+	arg2, err := inparg(2)
+	if err != nil {
+		return 0, 0, 0, err
 	}
-	arg2, err = inparg(2)
-	if err > 0 {
-		return 0, errnumbe
-	}
-	result, err = operation()
-	return result, err
+	result, err := operation(arg1, arg2)
+	return result, arg1, arg2, err
 }
 
-func inparg(num int) (float64, int) {
-	var res float64
-	var intString string
-	var err int
-	err = 0
+func inparg(num int) (float64, error) {
+	var (
+		res       float64
+		intString string
+	)
+
 	if num == 1 {
 		fmt.Println("Введите первое число")
 	} else {
@@ -50,15 +53,14 @@ func inparg(num int) (float64, int) {
 		"%s\n",
 		&intString,
 	)
-	res, errconv := strconv.ParseFloat(intString, 64)
-	if errconv != nil {
-		err = errnumbe
-		res = 0
+	res, err := strconv.ParseFloat(intString, 64)
+	if err != nil {
+		return 0, ErrInvalidNumber
 	}
-	return res, err
+	return res, nil
 }
 
-func inpmachen() (string, int) {
+func inpmachen() string {
 	var err int
 	err = 1
 	for err > 0 {
@@ -90,14 +92,12 @@ func inpmachen() (string, int) {
 		}
 	}
 	fmt.Println("-----------------------------")
-	return mach, err
+	return mach
 }
 
-func operation() (float64, int) {
+func operation(arg1, arg2 float64) (float64, error) {
 	var res float64
-	var err int
-	res = 0
-	err = 0
+
 	switch mach {
 	case plus:
 		res = arg1 + arg2
@@ -108,19 +108,19 @@ func operation() (float64, int) {
 	case div:
 		{
 			if arg2 == 0 && mach == div {
-				err = errdivzero // деление невозможно
+				return 0, ErrDivideZero
 			} else {
 				res = arg1 / arg2 // деление возможно
 			}
 		}
 	}
-	return res, err // выход
+	return res, nil
 }
 
-func printresult(err int) {
+func printresult(result, arg1, arg2 float64, err error) {
 
 	switch err {
-	case zeroerr:
+	case nil:
 		{
 			fmt.Println("-----------------------------")
 			fmt.Print("Результат:", "\n")
@@ -131,17 +131,17 @@ func printresult(err int) {
 			fmt.Printf("%.5f", result)
 			fmt.Print("\n")
 		}
-	case errnumbe:
+	case ErrInvalidNumber:
 		{
 			fmt.Println("\n", "*** К сожалению, вы ввели не число!!")
 			fmt.Println("*** Операция прекращена ***")
 		}
-	case erroper:
+	case ErrInvalidOperator:
 		{
 			fmt.Println("\n", "*** К сожалению, вы ввели неверный символ ***")
 			fmt.Println("*** Операция прекращена ***")
 		}
-	case errdivzero:
+	case ErrDivideZero:
 		{
 			fmt.Println("-----------------------------")
 			fmt.Println("*** Деление на ноль невозможно ***")
@@ -152,28 +152,25 @@ func printresult(err int) {
 }
 
 func main() {
-	var komand string
-	arg1 = 0
-	arg2 = 0
-	result = 0
+	var command string
 	mach = "?"
-	errcalcul = 0
-	komand = "Y"
-	for komand == "Y" || komand == "y" || komand == "Н" || komand == "н" {
+
+	command = "Y"
+	for strings.ToLower(command) == "y" || strings.ToLower(command) == "н" {
 		fmt.Println("-----------------------------")
 		fmt.Println("|       Калькулятор          |")
 		fmt.Println("|  Считать, не пересчитать!  |")
 		fmt.Println("|                            |")
 		fmt.Println("|   (c) jiliaevyp@gmail.com  |")
 		fmt.Println("-----------------------------")
-		result, errcalcul = callcul()
-		printresult(errcalcul)
+		//result, arg1, arg2, err :=
+		printresult(callcul())
 		fmt.Println("Продолжить? (Y)")
 		fmt.Println("Закончить? (Enter)")
-		komand = ""
+		command = ""
 		fmt.Scanf(
 			"%s\n",
-			&komand,
+			&command,
 		)
 
 	}
